@@ -1,0 +1,55 @@
+#!/bin/bash
+# texify.sh
+# @author:  William T Hollingsworth
+# @date:    October 01, 2014
+# @version: 1.2
+
+# A simple script wrapping pdflatex.  Also detects usage of a biblography and
+# will run \BiBTeX commands as necessary.
+
+# Version History
+# 12.06.2014 (1.2): Variables now half-quoted to support spaces in filenames.
+#                   Removed stray print statment.
+# 10.17.2014 (1.1): Fixed a bug where \BiBTeX could never run.
+# 10.17.2014 (1.0): Improved commenting and an error message.
+# 10.16.2014 (1.0): Now a general pdflatex wrapper for both my use cases.
+# 10.01.2014 (0.1): Initial version.
+
+# We should receive exactly one command line argument for this script to run as
+# expected.
+if [ "$#" -ne 1 ]; then
+  echo "usage: texify <sourcefile>.tex"
+  exit
+fi
+
+# Ensure that $1 is in fact a \LaTeX file.
+texsrc=$1
+if [ "${texsrc/tex}" = "$texsrc" ]; then
+  echo "error: a valid LaTeX source file must be presented"
+  exit
+fi
+
+echo $texsrc
+
+# Enforce clean pdflatex ouptut by creating a new directory.
+if [ ! -d "out" ]; then
+  mkdir out
+fi
+
+# Compile the \LaTeX source in the fresh directory.
+pdflatex -output-directory out "$texsrc"
+
+# If grepping for the \bibliography command returns a string of non-zero length,
+# we are looking at a file that needs to make use of \BiBTeX.  If so, run the
+# necessary extra commands that inspired this script in the first place.
+if grep '\\bibliography' "$texsrc"; then 
+  bibsrc=${texsrc/tex/aux}
+  bibtex out/"$bibsrc" &&
+  pdflatex -output-directory out "$texsrc" &&
+  pdflatex -output-directory out "$texsrc" 
+fi
+
+# Open up the output in a PDF Viewer.  This could be changed to use Okular,
+# Adobe, or whatever.
+pdfout="${texsrc/tex/pdf}"
+evince out/"$pdfout"
