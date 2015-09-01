@@ -8,6 +8,7 @@
 # will run \BiBTeX commands as necessary.
 
 # Version History
+# 09.02.2015 (1.2): Removed another stray echo print.
 # 12.06.2014 (1.2): Variables now half-quoted to support spaces in filenames.
 #                   Removed stray print statment.
 # 10.17.2014 (1.1): Fixed a bug where \BiBTeX could never run.
@@ -28,8 +29,6 @@ if [ "${texsrc/tex}" = "$texsrc" ]; then
   echo "error: a valid LaTeX source file must be presented"
   exit
 fi
-
-echo $texsrc
 
 # Enforce clean pdflatex ouptut by creating a new directory.
 if [ ! -d "out" ]; then
