@@ -53,7 +53,7 @@ fi
 # Open the output in a PDF Viewer if available.
 pdfout="${texsrc/tex/pdf}"
 if ps -e | grep -E '^.* kded4$' &>/dev/null && type okular &>/dev/null; then
-  okular out/${pdfout} &>/dev/null # see https://github.com/alexeevdv/
+  okular out/${pdfout} &>/dev/null # see https://github.com/alexeevdv/dename
 elif type evince 2>/dev/null; then
   evince out/${pdfout} &>/dev/null
 fi
