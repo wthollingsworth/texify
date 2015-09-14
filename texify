@@ -41,14 +41,17 @@ pdflatex -output-directory out "$texsrc"
 # If grepping for the \bibliography command returns a string of non-zero length,
 # we are looking at a file that needs to make use of \BiBTeX.  If so, run the
 # necessary extra commands that inspired this script in the first place.
-if grep '\\bibliography' "$texsrc"; then 
+if grep '\\bibliography' "$texsrc"; then
   bibsrc=${texsrc/tex/aux}
   bibtex out/"$bibsrc" &&
   pdflatex -output-directory out "$texsrc" &&
-  pdflatex -output-directory out "$texsrc" 
+  pdflatex -output-directory out "$texsrc"
 fi
 
-# Open up the output in a PDF Viewer.  This could be changed to use Okular,
-# Adobe, or whatever.
+# Open the output in a PDF Viewer if available.
 pdfout="${texsrc/tex/pdf}"
-evince out/"$pdfout"
+if ps -e | grep -E '^.* kded4$' &>/dev/null && type okular &>/dev/null; then
+  okular out/${pdfout} &>/dev/null # see https://github.com/alexeevdv/
+elif type evince 2>/dev/null; then
+  evince out/${pdfout} &>/dev/null
+fi
