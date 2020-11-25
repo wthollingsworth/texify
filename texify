@@ -1,13 +1,15 @@
 #!/bin/bash
 # texify.sh
 # @author:  William T Hollingsworth
-# @date:    October 01, 2014
-# @version: 1.2
+# @date:    November 25, 2020
+# @version: 1.4
 
 # A simple script wrapping pdflatex.  Also detects usage of a biblography and
 # will run \BiBTeX commands as necessary.
 
 # Version History
+# 11.25.2020 (1.4): Specify PDF Viewer via environment variable and fallback to
+#                   `xdg-open`
 # 09.14.2015 (1.3): Detect KDE/Okular or Evince for PDF Viewer.  Output will not
 #                   be opened if neitehr is installed.
 # 09.02.2015 (1.2): Removed another stray echo print.
@@ -50,10 +52,15 @@ if grep '\\bibliography' "$texsrc"; then
   pdflatex -output-directory out "$texsrc"
 fi
 
-# Open the output in a PDF Viewer if available.
+# Open the output in a PDF Viewer
 pdfout="${texsrc/tex/pdf}"
-if ps -e | grep -E '^.* kded4$' &>/dev/null && type okular &>/dev/null; then
-  okular out/${pdfout} &>/dev/null # see https://github.com/alexeevdv/dename
-elif type evince 2>/dev/null; then
-  evince out/${pdfout} &>/dev/null
+if type ${TEXIFY_PDF_VIEWER}; then
+    ${TEXIFY_PDF_VIEWER} ${pdfout}
+elif type xdg-open; then
+    xdg-open ${pdfout}
+else
+    echo "Unable to open ${pdfout}."
+    echo
+    echo "You can set a PDF viewer with the TEXIFY_PDF_VIEWER environment"
+    echo "variable or install \`xdg-open\`."
 fi
