@@ -53,8 +53,8 @@ if grep '\\bibliography' "$texsrc"; then
 fi
 
 # Open the output in a PDF Viewer
-pdfout="${texsrc/tex/pdf}"
-if type ${TEXIFY_PDF_VIEWER}; then
+pdfout="out/${texsrc/tex/pdf}"
+if ! command -v ${TEXIFY_PDF_VIEWER}; then
     ${TEXIFY_PDF_VIEWER} ${pdfout}
 elif type xdg-open; then
     xdg-open ${pdfout}
